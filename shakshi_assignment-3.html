@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #user-form{
+                text-align: center;
+        }
+    </style>
+</head>
+<body>
+    
+    <form id='user-form'>
+        <h2>Select City </h2>
+        <div class="user">
+            <select  id="SelectMenu">
+                <option value="mumbai">022Mumbai</option>
+                <option value="bangalore">080 bangalore</option>
+                <option value="surat">0261 Surat</option>
+                <option value="bihar">099 bihar</option>
+                <option value="hariyana">0321 hariyana</option>
+                <option value="mirzapur">043 mirzapur</option>
+                <option value="johnpur">021 johnpur</option>
+                <option value="badlapur">046 badlapur</option>
+            </select><br><br>
+            <button onclick="{handleSubmit()}">Submit</button>
+        </div>
+        <div  id="display-value" class="flex"></div>
+    </form>
+</body>
+<script>
+
+const a={
+
+"city_list": [
+
+    {
+
+        "city_name": "mumbai",
+
+        "city_code": 022,
+
+        "km": 100
+
+    },
+
+    {
+
+        "city_name": "bangalore",
+
+        "city_code": 080,
+
+        "km": 200
+
+    },
+
+    {
+
+        "city_name": "surat",
+
+        "city_code": 0261,
+
+        "km": 120
+
+    },
+
+    {
+
+        "city_name": "bihar",
+
+        "city_code": 099,
+
+        "km": 200
+
+    },
+
+    {
+
+        "city_name": "hariyana",
+
+        "city_code": 0321,
+
+        "km": 400
+
+    },
+
+    {
+
+        "city_name": "mirzapur",
+
+        "city_code": 043,
+
+        "km": 100
+
+    },
+
+    {
+
+        "city_name": "johnpur",
+
+        "city_code": 021,
+
+        "km":400
+
+    },
+
+    {
+
+        "city_name": "badlapur",
+
+        "city_code": 046,
+
+        "km": 500
+
+    }
+
+],
+
+"transport_route": [
+
+    {
+
+        "route_id": 1,
+
+        "route":[046,021]
+
+    },
+
+    {
+
+        "route_id": 2,
+
+        "route":[022,080,043]
+
+    },
+
+    {
+
+        "route_id": 3,
+
+        "route":[046,0321,0261]
+
+    }
+
+],
+
+"vehicleDetails": [
+
+    {
+
+        "vehicle_name": "Tata Truck",
+
+        "vehicle_id": 1,
+
+        "not_allowed_route": [022,043]
+
+    },
+
+    {
+
+        "vehicle_name": "Bhart Truck",
+
+        "vehicle_id": 2,
+
+        "not_allowed_route": [022,0321]
+
+    },
+
+    {
+
+        "vehicle_name": "Lion Truck",
+
+        "vehicle_id": 3,
+
+        "not_allowed_route": [0261]
+
+    }
+
+],
+
+"max_range": [
+
+    {
+
+        "vehicle_id": 1,
+
+        "range": 900
+
+    },
+
+    {
+
+        "vehicle_id": 2,
+
+        "range": 1400
+
+    },
+
+    {
+
+        "vehicle_id": 3,
+
+        "range": 500
+
+    }
+
+]
+
+}
+
+var showValue=document.getElementById("display-value")
+var selectedOption = document.getElementById("user-form").SelectMenu
+function handleSubmit(){
+    var b;
+    a.city_list.map(city=>{
+        if(city.city_name==selectedOption.value){
+            console.log("CityCode",city.city_code)
+            b=city.city_code
+        }
+    })
+console.log("CityCode",b)
+let truckData=[]
+let cityName=[]
+let Output=[]
+let TotalDistance=0
+// let b=080;
+event.preventDefault()
+a.vehicleDetails.map(ele=>{
+    if(! ele.not_allowed_route.includes(b)){
+        // console.log(ele.vehicle_id)
+        // console.log(ele.vehicle_name)
+        a.max_range.map(rangeEle=>{
+            if(rangeEle.vehicle_id==ele.vehicle_id){
+                // console.log(rangeEle.range)
+                // console.log(ele.vehicle_name)
+                truckData.push({
+                    TruckRange:rangeEle.range,
+                    TruckName:ele.vehicle_name
+                })
+            }
+            
+        })
+    }
+})
+
+a.transport_route.map(ele=>{
+    if(ele.route.includes(b)){
+        a.city_list.map(cityEle=>{
+            ele.route.map(routeCode=>{
+                if(cityEle.city_code==routeCode){
+                    // console.log(cityEle.city_name)
+                    cityName.push(cityEle.city_name)
+                    // console.log(cityEle.km)
+                    TotalDistance += cityEle.km
+                }
+                
+            })
+            
+        })
+    }
+})
+
+truckData.map(eleTruck=>{
+    if(eleTruck.TruckRange >= TotalDistance){
+        // console.log(cityName)
+        Output.push({
+            TravelCityName: cityName,
+            TravelKm: TotalDistance,
+            TruckData: eleTruck
+        })
+    }
+})
+showValue.innerHTML=''
+
+Output.length?Output.map(ele=>{
+    showValue.innerHTML +=
+    `
+    <div>
+        <ul>
+            <p>-----------------Travel Info-----------------</p>
+            <p>Total KM: ${ele.TravelKm}</p>
+            <p>Total CityName: ${ele.TravelCityName}</p>
+            <p>-----------------Truck Data-----------------</p>
+            <p>Max Range of Truck: ${ele.TruckData.TruckRange}</p>
+            <p>Max Range of Truck: ${ele.TruckData.TruckName}</p>
+        </ul>
+
+    </div>
+    
+    
+    `
+}) : showValue.innerHTML = `<p>No Route or Vehicle Found for Selected City...</p>`;
+
+// console.log(truckData)
+// console.log(TotalDistance)
+console.log('Output')
+console.log(Output.length)
+}
+</script>
+</html>
